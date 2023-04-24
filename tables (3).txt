@@ -1,0 +1,459 @@
+CREATE TABLE "USER" (
+    "LOGIN" VARCHAR2(50) PRIMARY KEY,
+    "PASSWORD" VARCHAR2(50),
+    "NAME" VARCHAR2(100),
+    "ADDRESS" VARCHAR2(200),
+    "TYPE" VARCHAR2(50)
+);
+
+CREATE TABLE "ADDRESS"(
+    "LOGIN" VARCHAR2(50),
+    "CITY" VARCHAR2(50),
+    "STREET" VARCHAR2(50),
+    "APARTMENT" NUMBER,
+    FOREIGN KEY ("LOGIN") REFERENCES "USER"("LOGIN")
+);
+
+CREATE TABLE "MENU" (
+    "PRODUCT ID" NUMBER,
+    "NAME" VARCHAR2(100),
+    "COST" NUMBER,
+    "DATE" DATE,
+    PRIMARY KEY ("PRODUCT ID")
+);
+
+CREATE TABLE "SHOPPING CART" (
+    "LOGIN" VARCHAR2(50),
+    "PRODUCT ID" NUMBER,
+    "NAME" VARCHAR2(100),
+    "COST" NUMBER,
+    "QUANTITY" NUMBER,
+    "TOTAL PRICE" NUMBER,
+    PRIMARY KEY ("LOGIN", "PRODUCT ID"),
+    FOREIGN KEY ("LOGIN") REFERENCES "USER"("LOGIN"),
+    FOREIGN KEY ("PRODUCT ID") REFERENCES "MENU"("PRODUCT ID")
+);
+
+CREATE TABLE "ORDERS" (
+    "ORDER ID" NUMBER,
+    "PRODUCT ID" NUMBER,
+    "LOGIN" VARCHAR2(50),
+    "NAME" VARCHAR2(100),
+    "COST" NUMBER,
+    "QUANTITY" NUMBER,
+    PRIMARY KEY ("ORDER ID"),
+    FOREIGN KEY ("PRODUCT ID") REFERENCES "MENU" ("PRODUCT ID"),
+    FOREIGN KEY ("LOGIN") REFERENCES "USER" ("LOGIN")
+);
+
+CREATE TABLE "BANK CARD" (
+    "CARD NUMBER" NUMBER(16),
+    "LOGIN" VARCHAR2(50),
+    "FULL NAME" VARCHAR2(100),
+    "BANK" VARCHAR2(50),
+    "TYPE" VARCHAR2(20),
+    "CVV" NUMBER(3),
+    "DATE" DATE,
+    PRIMARY KEY ("CARD NUMBER"),
+    FOREIGN KEY ("LOGIN") REFERENCES "USER" ("LOGIN")
+);
+
+CREATE TABLE "TRANSACTIONS" (
+    "TRANSACTION ID" NUMBER PRIMARY KEY,
+    "CARD NUMBER" NUMBER(16),
+    "AMOUNT" NUMBER(10, 2),
+    "STATUS" VARCHAR2(20),
+    FOREIGN KEY ("CARD NUMBER") REFERENCES "BANK CARD" ("CARD NUMBER")
+);
+
+CREATE TABLE "BRANCHES" (
+    "BRANCH ID" NUMBER PRIMARY KEY,
+    "PHONE NUMBER" VARCHAR2(50),
+    "EMAIL" VARCHAR2(50),
+    "ADDRESS" VARCHAR2(100)
+);
+
+CREATE TABLE "ADDRESS BRANCHES"(
+    "BRANCH ID" NUMBER(10),
+    "CITY" VARCHAR2(50),
+    "STREET" VARCHAR2(50),
+    "APARTMENT" NUMBER,
+    FOREIGN KEY ("BRANCH ID") REFERENCES "BRANCHES"("BRANCH ID")
+);
+
+CREATE TABLE "RESERVATION" (
+  "RESERVATION ID"  NUMBER PRIMARY KEY,
+  "LOGIN"           VARCHAR2(50),
+  "BRANCH ID"       NUMBER,
+  "ORDER ID"        NUMBER,
+  "TABLE NUM"       NUMBER,
+  "RES DATE TIME"   DATE,
+  FOREIGN KEY ("LOGIN") REFERENCES "USER"("LOGIN"),
+  FOREIGN KEY ("BRANCH ID") REFERENCES "BRANCHES"("BRANCH ID"),
+  FOREIGN KEY ("ORDER ID") REFERENCES "ORDERS"("ORDER ID")
+);
+
+CREATE TABLE "DELIVERY" (
+    "DELIVERY ID" NUMBER(10) PRIMARY KEY,
+    "LOGIN" VARCHAR2(50),
+    "BRANCH ID" NUMBER(10),
+    "ORDER ID" NUMBER(10),
+    "ADDRESS" VARCHAR2(100),
+    "DATE" DATE,
+    FOREIGN KEY ("LOGIN") REFERENCES "USER"("LOGIN"),
+    FOREIGN KEY ("BRANCH ID") REFERENCES "BRANCHES"("BRANCH ID"),
+    FOREIGN KEY ("ORDER ID") REFERENCES "ORDERS"("ORDER ID")
+);
+
+CREATE TABLE "ADDRESS DELIVERY"(
+    "DELIVERY ID" NUMBER(10),
+    "CITY" VARCHAR2(50),
+    "STREET" VARCHAR2(50),
+    "APARTMENT" NUMBER,
+    FOREIGN KEY ("DELIVERY ID") REFERENCES "DELIVERY"("DELIVERY ID")
+);
+
+CREATE TABLE "STAFF" (
+  "STAFF ID" NUMBER PRIMARY KEY,
+  "BRANCH ID" NUMBER,
+  "FIRST NAME" VARCHAR2(50),
+  "LAST NAME" VARCHAR2(50),
+  "PHONE NUMBER" VARCHAR2(50),
+  "DATE OF BIRTH" DATE,
+  "EMAIL" VARCHAR2(100),
+  "DATE OF JOINING" DATE,
+  "TYPE" VARCHAR2(20),
+  "SALARY" NUMBER,
+  FOREIGN KEY ("BRANCH ID") REFERENCES "BRANCHES"("BRANCH ID")
+);
+
+CREATE TABLE "FEEDSTOCK" (
+  "FEEDSTOCK ID" NUMBER PRIMARY KEY,
+  "NAME" VARCHAR2(50),
+  "DESCRIPTION" VARCHAR2(200)
+);
+
+CREATE TABLE "STORAGE" (
+  "BRANCH ID" NUMBER,
+  "FEEDSTOCK ID" NUMBER,
+  "QUANTITY" NUMBER,
+  "DATE" DATE,
+  PRIMARY KEY ("BRANCH ID", "FEEDSTOCK ID"),
+  FOREIGN KEY ("BRANCH ID") REFERENCES "BRANCHES"("BRANCH ID"),
+  FOREIGN KEY ("FEEDSTOCK ID") REFERENCES "FEEDSTOCK"("FEEDSTOCK ID")
+);
+
+CREATE TABLE "SHIPMENTS" (
+  "SHIPMENT ID"  NUMBER,
+  "BRANCH ID"    NUMBER,
+  "FEEDSTOCK ID" NUMBER,
+  "NAME"         VARCHAR2(50),
+  "QUANTITY"     NUMBER,
+  "DATE"         DATE,
+  "COST"         NUMBER,
+  PRIMARY KEY ("SHIPMENT ID", "FEEDSTOCK ID"),
+  FOREIGN KEY ("BRANCH ID") REFERENCES "BRANCHES"("BRANCH ID"),
+  FOREIGN KEY ("FEEDSTOCK ID") REFERENCES "FEEDSTOCK"("FEEDSTOCK ID")
+);
+
+
+
+
+
+
+USER
+Begin
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('icastelletto0', '3SOjtq6ISUV', 'Isabeau', '5638 Harper Drive', 'staff');
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('acrowche1', 'l5h3l33', 'Angus', '15 Havey Lane', 'user');
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('upuckey2', 'aa2OYthqotl', 'Ulysses', '95 Bartelt Place', 'staff');
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('hgocke3', 'kyvjWEO3mnzc', 'Harriot', '68 Lillian Point', 'staff');
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('ntremathack4', 'WlOmdl', 'Neel', '92338 Mcguire Circle', 'staff');                              			
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('wmenis5', 'kk4yNCk', 'Way', '7211 Green Ridge Circle', 'staff');
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('gjirusek6', 'mkdaRw', 'Gawen', '03764 Karstens Alley', 'user');
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('ahansemann7', '7KFgFGi2GGy', 'Aldric', '22519 Transport Circle', 'staff');
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('rstanier8', 'OB1CvLUlIm', 'Ruben', '2 Dahle Crossing', 'user');
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('ddorsay9', '9jE0S9', 'Dacy', '95 Birchwood Pass', 'staff');
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('mfrankiewicza', 'NI4E6YzIyMU', 'Melany', '2997 Emmet Point', 'user');
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('ndukesb', 'flbTA5elv', 'Nan', '39892 Pepper Wood Place', 'user');
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('jfeastc', 'QwLn0Fu', 'Jamie', '97255 Northwestern Lane', 'user');
+
+INSERT INTO "USER" ("LOGIN", "PASSWORD", "NAME", "ADDRESS", "TYPE") 
+VALUES ('scastreed', 'GUCX5GT', 'Shayna', '9177 Melby Court', 'staff');
+
+INSERT INTO "USER" (login, password, name, address, type)
+VALUES ('dbirde', 'SnnSDp', 'Dorthy', '6 Raven Center', 'staff');
+END;
+
+ADDRESS
+begin
+insert into "ADDRESS" ("LOGIN", "CITY", "STREET", "APARTMENT") values ('ahansemann7', 'Paracambi', '8121 Brentwood Park', '22');
+insert into "ADDRESS" ("LOGIN", "CITY", "STREET", "APARTMENT") values ('jfeastc', 'Leigongmiao', '677 Gale Court', '1');
+insert into "ADDRESS" ("LOGIN", "CITY", "STREET", "APARTMENT") values ('dbirde', 'Majagual', '42 Cardinal Terrace', '73291');
+insert into "ADDRESS" ("LOGIN", "CITY", "STREET", "APARTMENT") values ('ddorsay9', 'Donostia-San Sebastian', '30264 Stoughton Court', '47');
+insert into "ADDRESS" ("LOGIN", "CITY", "STREET", "APARTMENT") values ('mfrankiewicza', 'Marcabal', '7465 Sunnyside Plaza', '923');						
+insert into "ADDRESS" ("LOGIN", "CITY", "STREET", "APARTMENT") values ('acrowche1', 'Kungälv', '00194 Sommers Parkway', '7639');
+insert into "ADDRESS" ("LOGIN", "CITY", "STREET", "APARTMENT") values ('wmenis5', 'Birsa', '465 Rieder Court', '7');
+insert into "ADDRESS" ("LOGIN", "CITY", "STREET", "APARTMENT") values ('ntremathack4', 'Jianggang', '36 Lake View Terrace', '4813');
+insert into "ADDRESS" ("LOGIN", "CITY", "STREET", "APARTMENT") values ('icastelletto0', 'Lohayong', '12420 Blue Bill Park Parkway', '0192');
+insert into "ADDRESS" ("LOGIN", "CITY", "STREET", "APARTMENT") values ('upuckey2', 'St. Anton an der Jeßnitz', '72576 Anniversary Road', '915');
+end;
+
+MENU
+BEGIN
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (1, 'LATTE S', '34.70');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (2, 'LATTE M', '30.82');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (3, 'LATTE L', '25.61');     
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (4, 'ESPRESSO S', '6.88');           						
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (5, 'ESPRESSO M', '17.34');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (6, 'ESPRESSO L', '39.44');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (7, 'AMERICANO S', '23.49');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (8, 'AMERICANO M', '31.90');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (9, 'AMERICANO L', '30.62');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (10, 'DESERT CHEESECAKE STRAWBERRY', '28.83');					
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (11, 'DESERT CHEESECAKE CHOCOLATE', '21.84');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (12, 'DESERT CHEESECAKE VANILLA', '24.25');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (13, 'ICED LATTE S', '21.76');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (14, 'ICED LATTE M', '17.63');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (15, 'ICED LATTE L', '46.46');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (16, 'ICED ESPRESSO S', '36.36');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (17, 'ICED ESPRESSO M', '23.56');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (18, 'ICED ESPRESSO L', '46.46');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (19, 'ICED AMERICANO S', '26.26');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (20, 'ICED AMERICANO M', '24.53');
+insert into "MENU" ("PRODUCT ID", "NAME", "COST") values (21, 'ICED AMERICANO L', '27.76');
+END;
+
+
+
+SHOPPING CART
+Begin
+
+INSERT INTO "SHOPPING CART" ("LOGIN", "PRODUCT ID", "NAME", "COST", "QUANTITY", "TOTAL PRICE") 
+VALUES ('ahansemann7', 1, 'LATTE S', '5.99', '2', '11.98');
+
+INSERT INTO "SHOPPING CART" ("LOGIN", "PRODUCT ID", "NAME", "COST", "QUANTITY", "TOTAL PRICE")  
+VALUES ('jfeastc', 6, 'ESPRESSO L', '7.56', '3', '22.68');
+
+INSERT INTO "SHOPPING CART" ("LOGIN", "PRODUCT ID", "NAME", "COST", "QUANTITY", "TOTAL PRICE")   
+VALUES ('dbirde', 3, 'LATTE L', '9.99', '4', '39.96');
+
+INSERT INTO "SHOPPING CART" ("LOGIN", "PRODUCT ID", "NAME", "COST", "QUANTITY", "TOTAL PRICE")  
+VALUES ('ddorsay9', 4, 'ESPRESSO S', '4.45', '4', '17.80');
+
+INSERT INTO "SHOPPING CART" ("LOGIN", "PRODUCT ID", "NAME", "COST", "QUANTITY", "TOTAL PRICE")  				
+VALUES ('mfrankiewicza', 14, 'ICED LATTE M', '9.11', '1', '9.11');
+
+INSERT INTO "SHOPPING CART" ("LOGIN", "PRODUCT ID", "NAME", "COST", "QUANTITY", "TOTAL PRICE")   
+VALUES ('acrowche1', 6, 'ESPRESSO L', '10.99', '2', '21.98');
+
+INSERT INTO "SHOPPING CART" ("LOGIN", "PRODUCT ID", "NAME", "COST", "QUANTITY", "TOTAL PRICE")  
+VALUES ('wmenis5', 7, 'AMERICANO S', '16.68', '1', '16.68');
+
+INSERT INTO "SHOPPING CART" ("LOGIN", "PRODUCT ID", "NAME", "COST", "QUANTITY", "TOTAL PRICE")   
+VALUES ('ntremathack4', 8, 'AMERICANO M', '2.49', '3', '7.47');
+
+INSERT INTO "SHOPPING CART" ("LOGIN", "PRODUCT ID", "NAME", "COST", "QUANTITY", "TOTAL PRICE")  
+VALUES ('icastelletto0', 9, 'AMERICANO L', '5.65', '3', '16.95');
+
+INSERT INTO "SHOPPING CART" ("LOGIN", "PRODUCT ID", "NAME", "COST", "QUANTITY", "TOTAL PRICE")  
+VALUES ('upuckey2', 8, 'AMERICANO M', '11.59', '2', '23.18');
+END;
+
+ORDERS
+BEGIN
+insert into "ORDERS" ("ORDER ID", "PRODUCT ID", "LOGIN", "NAME", "COST", "QUANTITY") values (1, 6, 'upuckey2', 'Ulysses', '29.82', 3);
+insert into "ORDERS" ("ORDER ID", "PRODUCT ID", "LOGIN", "NAME", "COST", "QUANTITY") values (2, 10, 'icastelletto0', 'Isabeau', '29.43', 3);
+insert into "ORDERS" ("ORDER ID", "PRODUCT ID", "LOGIN", "NAME", "COST", "QUANTITY") values (3, 3, 'dbirde', 'Dorthy', '35.37', 4);
+insert into "ORDERS" ("ORDER ID", "PRODUCT ID", "LOGIN", "NAME", "COST", "QUANTITY") values (4, 4, 'ntremathack4', 'Neel', '11.42', 2);					
+insert into "ORDERS" ("ORDER ID", "PRODUCT ID", "LOGIN", "NAME", "COST", "QUANTITY") values (5, 10, 'jfeastc', 'Jamie', '12.56', 1);
+insert into "ORDERS" ("ORDER ID", "PRODUCT ID", "LOGIN", "NAME", "COST", "QUANTITY") values (6, 9, 'ahansemann7', 'Aldric', '24.60', 3);
+insert into "ORDERS" ("ORDER ID", "PRODUCT ID", "LOGIN", "NAME", "COST", "QUANTITY") values (7, 14, 'ddorsay9', 'Dacy', '8.94', 5);
+insert into "ORDERS" ("ORDER ID", "PRODUCT ID", "LOGIN", "NAME", "COST", "QUANTITY") values (8, 8, 'mfrankiewicza', 'Melany', '32.52', 5);
+insert into "ORDERS" ("ORDER ID", "PRODUCT ID", "LOGIN", "NAME", "COST", "QUANTITY") values (9, 18, 'wmenis5', 'Way', '20.32', 5);
+insert into "ORDERS" ("ORDER ID", "PRODUCT ID", "LOGIN", "NAME", "COST", "QUANTITY") values (10, 10, 'acrowche1', 'Angus', '21.33', 3);
+END;
+
+
+
+BANK CARD
+BEGIN
+insert into "BANK CARD" ("CARD NUMBER", "LOGIN", "FULL NAME", "BANK", "TYPE", "CVV", "DATE") values ('5602252071081044', 'upuckey2', 'Ulysses', 'Harber, Doyle and Williamson', 'bankcard', 981, '04/03/2027');
+insert into "BANK CARD" ("CARD NUMBER", "LOGIN", "FULL NAME", "BANK", "TYPE", "CVV", "DATE") values ('201906193726861', 'icastelletto0', 'Isabeau', 'Hansen and Sons', 'diners', 738, '09/03/2027');
+insert into "BANK CARD" ("CARD NUMBER", "LOGIN", "FULL NAME", "BANK", "TYPE", "CVV", "DATE") values ('3564517674920199', 'dbirde', 'Dorthy', 'Kshlerin, Casper and Cole', 'jcb', 955, '01/06/2025');
+insert into "BANK CARD" ("CARD NUMBER", "LOGIN", "FULL NAME", "BANK", "TYPE", "CVV", "DATE") values ('3568858821354890', 'ntremathack4', 'Neel', 'Heathcote-Cummerata', 'jcb', 961, '09/03/2027');
+insert into "BANK CARD" ("CARD NUMBER", "LOGIN", "FULL NAME", "BANK", "TYPE", "CVV", "DATE") values ('201610988355239', 'jfeastc', 'Jamie', 'Fadel, Jenkins and O''Conner', 'diners', 874, '09/12/2027');				
+insert into "BANK CARD" ("CARD NUMBER", "LOGIN", "FULL NAME", "BANK", "TYPE", "CVV", "DATE") values ('3547243474714110', 'ahansemann7', 'Aldric', 'Stroman, Reichert and Feest', 'jcb', 230, '03/08/2028');
+insert into "BANK CARD" ("CARD NUMBER", "LOGIN", "FULL NAME", "BANK", "TYPE", "CVV", "DATE") values ('6331100645990443', 'ddorsay9', 'Dacy', 'Beer-Erdman', 'switch', 254, '05/05/2028');
+insert into "BANK CARD" ("CARD NUMBER", "LOGIN", "FULL NAME", "BANK", "TYPE", "CVV", "DATE") values ('30249698399877', 'mfrankiewicza', 'Melany', 'Treutel Group', 'diners', 672, '04/10/2027');
+insert into "BANK CARD" ("CARD NUMBER", "LOGIN", "FULL NAME", "BANK", "TYPE", "CVV", "DATE") values ('3576687112149564', 'wmenis5', 'Way', 'Lang-Considine', 'jcb', 746, '07/07/2028');
+insert into "BANK CARD" ("CARD NUMBER", "LOGIN", "FULL NAME", "BANK", "TYPE", "CVV", "DATE") values ('5018838772491261', 'acrowche1', 'Angus', 'Brown-Hoeger', 'maestro', 167, '04/02/2026');
+END;
+
+TRANSACTIONS
+Begin
+insert into "TRANSACTIONS" ("TRANSACTION ID", "CARD NUMBER", "AMOUNT", "STATUS") values (1, '5602252071081044', '29.82', 'PROCESSING');
+insert into "TRANSACTIONS" ("TRANSACTION ID", "CARD NUMBER", "AMOUNT", "STATUS") values (2, '201906193726861', '17.58', 'SUCCESS');
+insert into "TRANSACTIONS" ("TRANSACTION ID", "CARD NUMBER", "AMOUNT", "STATUS") values (3, '3564517674920199', '5.28', 'SUCCESS');
+insert into "TRANSACTIONS" ("TRANSACTION ID", "CARD NUMBER", "AMOUNT", "STATUS") values (4, '3568858821354890', '11.72', 'SUCCESS');				
+insert into "TRANSACTIONS" ("TRANSACTION ID", "CARD NUMBER", "AMOUNT", "STATUS") values (5, '201610988355239', '21.41', 'WAIT FOR RESPONSE');
+insert into "TRANSACTIONS" ("TRANSACTION ID", "CARD NUMBER", "AMOUNT", "STATUS") values (6, '3547243474714110', '18.67', 'PROCESSING');
+insert into "TRANSACTIONS" ("TRANSACTION ID", "CARD NUMBER", "AMOUNT", "STATUS") values (7, '6331100645990443', '18.93', 'WAIT FOR RESPONSE');
+insert into "TRANSACTIONS" ("TRANSACTION ID", "CARD NUMBER", "AMOUNT", "STATUS") values (8, '30249698399877', '19.55', 'PROCESSING');
+insert into "TRANSACTIONS" ("TRANSACTION ID", "CARD NUMBER", "AMOUNT", "STATUS") values (9, '3576687112149564', '12.36', 'SUCCESS');
+insert into "TRANSACTIONS" ("TRANSACTION ID", "CARD NUMBER", "AMOUNT", "STATUS") values (10,'5018838772491261', '30.39', 'PROCESSING');
+End;
+
+
+BRANCHES
+begin
+insert into "BRANCHES" ("BRANCH ID", "PHONE NUMBER", "EMAIL", "ADDRESS") values (1, '374(743)741-8521', 'starbucks.nyc1@gmail.com', '858 Armistice Park');
+insert into "BRANCHES" ("BRANCH ID", "PHONE NUMBER", "EMAIL", "ADDRESS") values (2, '62(795)408-6457', 'starbucks.nyc2@gmail.com', '88919 Kedzie Crossing');
+insert into "BRANCHES" ("BRANCH ID", "PHONE NUMBER", "EMAIL", "ADDRESS") values (3, '224(876)913-5077', 'starbucks.nyc3@gmail.com', '7 Burrows Street');
+insert into "BRANCHES" ("BRANCH ID", "PHONE NUMBER", "EMAIL", "ADDRESS") values (4, '55(115)301-4736', 'starbucks.nyc4@gmail.com', '9 Pawling Pass');				
+insert into "BRANCHES" ("BRANCH ID", "PHONE NUMBER", "EMAIL", "ADDRESS") values (5, '62(196)314-2725', 'starbucks.nyc5@gmail.com', '350 Brentwood Alley');
+insert into "BRANCHES" ("BRANCH ID", "PHONE NUMBER", "EMAIL", "ADDRESS") values (6, '1(915)356-5550', 'starbucks.nyc6@gmail.com', '48 Northwestern Road');
+insert into "BRANCHES" ("BRANCH ID", "PHONE NUMBER", "EMAIL", "ADDRESS") values (7, '34(794)256-7299', 'starbucks.nyc7@gmail.com', '48 Trailsway Street');
+insert into "BRANCHES" ("BRANCH ID", "PHONE NUMBER", "EMAIL", "ADDRESS") values (8, '269(971)532-6686', 'starbucks.nyc8@gmail.com', '0965 Ridge Oak Point');
+insert into "BRANCHES" ("BRANCH ID", "PHONE NUMBER", "EMAIL", "ADDRESS") values (9, '234(160)551-7102', 'starbucks.nyc9@gmail.com', '36920 Fieldstone Crossing');
+insert into "BRANCHES" ("BRANCH ID", "PHONE NUMBER", "EMAIL", "ADDRESS") values (10, '356(358)904-7980', 'starbucks.nyc10@gmail.com', '90625 Tomscot Point');
+end;
+
+
+ADDRESS BRANCHES
+begin
+insert into "ADDRESS BRANCHES" ("BRANCH ID", "CITY", "STREET", "APARTMENT") values (1, 'Puerto Tejada', '7987 Emmet Lane', '9');
+insert into "ADDRESS BRANCHES" ("BRANCH ID", "CITY", "STREET", "APARTMENT") values (2, 'Gondang', '25389 Dapin Trail', '864');
+insert into "ADDRESS BRANCHES" ("BRANCH ID", "CITY", "STREET", "APARTMENT") values (3, 'Sabana Grande de Boyá', '0927 Farwell Street', '6');			
+insert into "ADDRESS BRANCHES" ("BRANCH ID", "CITY", "STREET", "APARTMENT") values (4, 'Nazaré', '2 Portage Junction', '19');
+insert into "ADDRESS BRANCHES" ("BRANCH ID", "CITY", "STREET", "APARTMENT") values (5, 'Mel’nikovo', '0526 Thompson Place', '3');
+insert into "ADDRESS BRANCHES" ("BRANCH ID", "CITY", "STREET", "APARTMENT") values (6, 'Armenia', '60 Heffernan Circle', '7635');
+insert into "ADDRESS BRANCHES" ("BRANCH ID", "CITY", "STREET", "APARTMENT") values (7, 'Zhihe', '35 Debra Crossing', '517');
+insert into "ADDRESS BRANCHES" ("BRANCH ID", "CITY", "STREET", "APARTMENT") values (8, 'Nancaicun', '077 School Trail', '0');
+insert into "ADDRESS BRANCHES" ("BRANCH ID", "CITY", "STREET", "APARTMENT") values (9, 'Guomaying', '64319 Kinsman Crossing', '07547');
+insert into "ADDRESS BRANCHES" ("BRANCH ID", "CITY", "STREET", "APARTMENT") values (10, 'Pajé', '2522 Cottonwood Court', '0');
+end;
+
+
+RESERVATIONS
+begin
+insert into "RESERVATION" ("RESERVATION ID", "LOGIN", "BRANCH ID", "ORDER ID", "TABLE NUM", "RES DATE TIME") values (1, 'upuckey2', 1, 1, 2, '04/03/2024');
+insert into "RESERVATION" ("RESERVATION ID", "LOGIN", "BRANCH ID", "ORDER ID", "TABLE NUM", "RES DATE TIME") values (2, 'icastelletto0', 2, 2, 6, '09/03/2024');
+insert into "RESERVATION" ("RESERVATION ID", "LOGIN", "BRANCH ID", "ORDER ID", "TABLE NUM", "RES DATE TIME") values (3, 'dbirde', 3, 3, 1, '01/06/2024');
+insert into "RESERVATION" ("RESERVATION ID", "LOGIN", "BRANCH ID", "ORDER ID", "TABLE NUM", "RES DATE TIME") values (4, 'ntremathack4', 1, 4, 7, '09/03/2024');
+insert into "RESERVATION" ("RESERVATION ID", "LOGIN", "BRANCH ID", "ORDER ID", "TABLE NUM", "RES DATE TIME") values (5, 'jfeastc', 5, 5, 15, '09/12/2024');			
+insert into "RESERVATION" ("RESERVATION ID", "LOGIN", "BRANCH ID", "ORDER ID", "TABLE NUM", "RES DATE TIME") values (6, 'ahansemann7', 6, 6, 2, '03/08/2024');
+insert into "RESERVATION" ("RESERVATION ID", "LOGIN", "BRANCH ID", "ORDER ID", "TABLE NUM", "RES DATE TIME") values (7, 'ddorsay9', 7, 7, 1, '05/05/2024');
+insert into "RESERVATION" ("RESERVATION ID", "LOGIN", "BRANCH ID", "ORDER ID", "TABLE NUM", "RES DATE TIME") values (8, 'mfrankiewicza', 8, 8, 3, '04/10/2024');
+insert into "RESERVATION" ("RESERVATION ID", "LOGIN", "BRANCH ID", "ORDER ID", "TABLE NUM", "RES DATE TIME") values (9, 'wmenis5', 9, 9, 7, '04/07/2024');
+insert into "RESERVATION" ("RESERVATION ID", "LOGIN", "BRANCH ID", "ORDER ID", "TABLE NUM", "RES DATE TIME") values (10, 'acrowche1', 10, 10, 1, '04/02/2024');
+end;
+
+
+DELIVERY
+begin
+insert into "DELIVERY" ("DELIVERY ID", "ORDER ID", "ADDRESS", "DATE") values (1, 2, '1937 Rieder Avenue', '4/29/2022');
+insert into "DELIVERY" ("DELIVERY ID", "ORDER ID", "ADDRESS", "DATE") values (2, 6, '4 Helena Alley', '4/27/2022');
+insert into "DELIVERY" ("DELIVERY ID", "ORDER ID", "ADDRESS", "DATE") values (3, 7, '1702 Aberg Road', '4/25/2022');
+insert into "DELIVERY" ("DELIVERY ID", "ORDER ID", "ADDRESS", "DATE") values (4, 8, '11996 Mendota Plaza', '4/27/2022');		
+insert into "DELIVERY" ("DELIVERY ID", "ORDER ID", "ADDRESS", "DATE") values (5, 9, '4514 Sommers Alley', '4/27/2022');
+insert into "DELIVERY" ("DELIVERY ID", "ORDER ID", "ADDRESS", "DATE") values (6, 5, '5 Anzinger Court', '4/24/2022');
+insert into "DELIVERY" ("DELIVERY ID", "ORDER ID", "ADDRESS", "DATE") values (7, 4, '71837 Westridge Way', '4/29/2022');
+insert into "DELIVERY" ("DELIVERY ID", "ORDER ID", "ADDRESS", "DATE") values (8, 10, '9 Londonderry Place', '4/29/2022');
+end;
+
+
+ADDRESS DELIVERY
+begin
+insert into "ADDRESS DELIVERY" ("DELIVERY ID", "CITY", "STREET", "APARTMENT") values (1, 'Goléré', '615 Wayridge Court', '78');
+insert into "ADDRESS DELIVERY" ("DELIVERY ID", "CITY", "STREET", "APARTMENT") values (2, 'Longvic', '6749 Sloan Plaza', '066');
+insert into "ADDRESS DELIVERY" ("DELIVERY ID", "CITY", "STREET", "APARTMENT") values (3, 'Jāsk', '16 Nova Lane', '208');
+insert into "ADDRESS DELIVERY" ("DELIVERY ID", "CITY", "STREET", "APARTMENT") values (4, 'Portachuelo', '9 Rigney Road', '366');			
+insert into "ADDRESS DELIVERY" ("DELIVERY ID", "CITY", "STREET", "APARTMENT") values (5, 'Huayuan', '5 Grim Plaza', '2');
+insert into "ADDRESS DELIVERY" ("DELIVERY ID", "CITY", "STREET", "APARTMENT") values (6, 'Xique Xique', '0941 Cottonwood Court', '62');
+insert into "ADDRESS DELIVERY" ("DELIVERY ID", "CITY", "STREET", "APARTMENT") values (7, 'Aguas Verdes', '68879 Rusk Crossing', '36');
+insert into "ADDRESS DELIVERY" ("DELIVERY ID", "CITY", "STREET", "APARTMENT") values (8, 'Ciudad Sandino', '717 Dottie Pass', '80676');
+end;
+
+
+STAFF
+begin
+insert into "STAFF" ("STAFF ID", "BRANCH ID", "FIRST NAME", "LAST NAME", "PHONE NUMBER", "DATE OF BIRTH", "EMAIL", "DATE OF JOINING", "TYPE", "SALARY") values (1, 1, 'Charmaine', 'Sherrett', '63(927)413-5114', '03/01/1993', 'csherrett0@hatena.ne.jp', '04/09/2016', 'Barista', '1205.07');
+insert into "STAFF" ("STAFF ID", "BRANCH ID", "FIRST NAME", "LAST NAME", "PHONE NUMBER", "DATE OF BIRTH", "EMAIL", "DATE OF JOINING", "TYPE", "SALARY") values (2, 4, 'Doloritas', 'Bottini', '7(262)661-6751', '11/08/1994', 'dbottini1@wp.com', '10/03/2020', 'Admin', '1606.39');
+insert into "STAFF" ("STAFF ID", "BRANCH ID", "FIRST NAME", "LAST NAME", "PHONE NUMBER", "DATE OF BIRTH", "EMAIL", "DATE OF JOINING", "TYPE", "SALARY") values (3, 3, 'Lion', 'Casbolt', '7(183)893-4838', '11/11/1999', 'lcasbolt2@omniture.com', '12/06/2022', 'Barista', '1121.97');					
+insert into "STAFF" ("STAFF ID", "BRANCH ID", "FIRST NAME", "LAST NAME", "PHONE NUMBER", "DATE OF BIRTH", "EMAIL", "DATE OF JOINING", "TYPE", "SALARY") values (4, 4, 'Jori', 'MacEnelly', '976(655)437-2997', '08/08/1997', 'jmacenelly3@google.it', '09/01/2016', 'Food Chemist', '2366.06');
+insert into "STAFF" ("STAFF ID", "BRANCH ID", "FIRST NAME", "LAST NAME", "PHONE NUMBER", "DATE OF BIRTH", "EMAIL", "DATE OF JOINING", "TYPE", "SALARY") values (5, 5, 'Lettie', 'Comfort', '62(666)162-2381', '11/06/1991', 'lcomfort4@edublogs.org', '09/06/2022', 'Manager', '1891.85');
+insert into "STAFF" ("STAFF ID", "BRANCH ID", "FIRST NAME", "LAST NAME", "PHONE NUMBER", "DATE OF BIRTH", "EMAIL", "DATE OF JOINING", "TYPE", "SALARY") values (6, 6, 'Avigdor', 'Guerrin', '1(423)608-1995', '05/08/1994', 'aguerrin5@unicef.org', '03/10/2019', 'Cleaner', '2246.40');
+insert into "STAFF" ("STAFF ID", "BRANCH ID", "FIRST NAME", "LAST NAME", "PHONE NUMBER", "DATE OF BIRTH", "EMAIL", "DATE OF JOINING", "TYPE", "SALARY") values (7, 2, 'Blythe', 'Willimont', '62(871)343-8649', '03/04/1996', 'bwillimont6@bluehost.com', '11/05/2017', 'Cleaner', '2034.47');
+insert into "STAFF" ("STAFF ID", "BRANCH ID", "FIRST NAME", "LAST NAME", "PHONE NUMBER", "DATE OF BIRTH", "EMAIL", "DATE OF JOINING", "TYPE", "SALARY") values (8, 4, 'Stacia', 'Kittiman', '92(329)772-7465', '07/03/2001', 'skittiman7@jugem.jp', '12/01/2022', 'Food Chemist', '2291.42');
+end;
+
+
+FEEDSTOCK
+begin
+insert into "FEEDSTOCK" ("FEEDSTOCK ID", "NAME", "DESCRIPTION") values (1, 'cups', 'cardboard cups');
+insert into "FEEDSTOCK" ("FEEDSTOCK ID", "NAME", "DESCRIPTION") values (2, 'coffee', 'coffee beans');
+insert into "FEEDSTOCK" ("FEEDSTOCK ID", "NAME", "DESCRIPTION") values (3, 'cane sugar', 'bag of cane sugar');				
+insert into "FEEDSTOCK" ("FEEDSTOCK ID", "NAME", "DESCRIPTION") values (4, 'sugar', 'bag of sugar');
+insert into "FEEDSTOCK" ("FEEDSTOCK ID", "NAME", "DESCRIPTION") values (5, 'napkins', 'pack of napkins');
+end;
+
+STORAGE
+begin
+insert into "STORAGE" ("BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE") values (1, 1, 40, '05/05/2023');
+insert into "STORAGE" ("BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE") values (2, 2, 11, '07/04/2023');
+insert into "STORAGE" ("BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE") values (3, 3, 22, '01/05/2023');
+insert into "STORAGE" ("BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE") values (4, 4, 15, '09/04/2023');
+insert into "STORAGE" ("BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE") values (5, 5, 32, '02/05/2023');				
+insert into "STORAGE" ("BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE") values (6, 1, 50, '05/05/2023');
+insert into "STORAGE" ("BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE") values (7, 2, 13, '12/04/2023');
+insert into "STORAGE" ("BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE") values (8, 3, 41, '01/05/2023');
+insert into "STORAGE" ("BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE") values (9, 4, 17, '11/04/2023');
+insert into "STORAGE" ("BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE") values (10, 5, 8, '02/05/2023');
+end;
+
+
+SHIPMENTS
+begin
+insert into "SHIPMENTS" ("SHIPMENT ID", "BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE", "COST") values (1, 1, 1, 998, '08/02/2024', '6762.65');
+insert into "SHIPMENTS" ("SHIPMENT ID", "BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE", "COST") values (2, 2, 2, 398, '04/07/2023', '1285.03');
+insert into "SHIPMENTS" ("SHIPMENT ID", "BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE", "COST") values (3, 3, 3, 29, '04/01/2024', '5629.99');
+insert into "SHIPMENTS" ("SHIPMENT ID", "BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE", "COST") values (4, 4, 4, 254, '12/08/2023', '2068.46');
+insert into "SHIPMENTS" ("SHIPMENT ID", "BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE", "COST") values (5, 5, 5, 588, '11/07/2023', '2782.77');		
+insert into "SHIPMENTS" ("SHIPMENT ID", "BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE", "COST") values (6, 6, 1, 56, '06/01/2024', '3516.68');
+insert into "SHIPMENTS" ("SHIPMENT ID", "BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE", "COST") values (7, 7, 2, 797, '09/06/2023', '3713.91');
+insert into "SHIPMENTS" ("SHIPMENT ID", "BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE", "COST") values (8, 8, 3, 71, '01/03/2024', '7886.88');
+insert into "SHIPMENTS" ("SHIPMENT ID", "BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE", "COST") values (9, 9, 4, 343, '12/04/2024', '7976.60');
+insert into "SHIPMENTS" ("SHIPMENT ID", "BRANCH ID", "FEEDSTOCK ID", "QUANTITY", "DATE", "COST") values (10, 10, 5, 989, '07/08/2023', '4639.89');
+end;
+
+
+
+
+
+
