@@ -1,0 +1,250 @@
+CREATE OR REPLACE PROCEDURE group_data1 IS
+  CURSOR c_data IS
+    SELECT "NAME", "LOGIN", SUM ("TYPE") as sum_TYPE
+    FROM "USER"
+    GROUP BY "TYPE";
+BEGIN
+  FOR r_data IN c_data LOOP
+    DBMS_OUTPUT.PUT_LINE(r_data.sum_TYPE || ': ' || r_data.sum_TYPE);
+  END LOOP;
+END;
+
+
+CREATE OR REPLACE PROCEDURE group_data2 IS
+  CURSOR c_data IS
+    SELECT "BRANCH ID", "FEEDSTOCK ID", SUM("QUANTITY") as sum_QUANTITY
+    FROM "STORAGE"
+    GROUP BY "BRANCH ID", "FEEDSTOCK ID";
+BEGIN
+  FOR r_data IN c_data LOOP
+    DBMS_OUTPUT.PUT_LINE(r_data."BRANCH ID" || ', ' ||  r_data."FEEDSTOCK ID" || ': ' || r_data.sum_QUANTITY);
+  END LOOP;
+END;
+
+
+CREATE OR REPLACE PROCEDURE group_data3 IS
+  CURSOR c_data IS
+    SELECT MAX("STAFF ID") AS "STAFF ID", MAX("FIRST NAME") AS "FIRST NAME", MAX("LAST NAME") AS "LAST NAME", MAX("PHONE NUMBER") AS "PHONE NUMBER", "BRANCH ID"
+    FROM STAFF
+    GROUP BY "BRANCH ID";
+BEGIN
+  FOR r_data IN c_data LOOP
+    DBMS_OUTPUT.PUT_LINE(r_data."BRANCH ID");
+  END LOOP;
+END;
+
+
+DECLARE
+   record_count INTEGER;
+BEGIN
+   SELECT COUNT(*) INTO record_count FROM "ORDERS";
+   DBMS_OUTPUT.PUT_LINE('The number of records is: ' || record_count);
+END;
+
+
+
+CREATE OR REPLACE TRIGGER count_rows_before_insert
+BEFORE INSERT ON "SHOPPING CART"
+DECLARE
+ counter NUMBER;
+BEGIN
+ SELECT COUNT(*) INTO counter FROM "SHOPPING CART";
+ DBMS_OUTPUT.PUT_LINE('Number of products in shopping cart before adding tis one is: ' || counter );
+END;
+
+
+
+CREATE OR REPLACE TRIGGER cart_total_price_autocount
+BEFORE INSERT OR UPDATE OF cost, quantity ON "SHOPPING CART"
+FOR EACH ROW
+BEGIN
+ :NEW."TOTAL PRICE" := :NEW.cost * :NEW.quantity;
+END;
+
+
+
+CREATE OR REPLACE PROCEDURE get_cart_total_prices_by_user AS
+    CURSOR c_cart_totals IS
+        SELECT login, SUM("TOTAL PRICE") AS total_sum
+        FROM "SHOPPING CART"
+        GROUP BY login;
+    v_login "SHOPPING CART".login%TYPE;
+    v_total_sum NUMBER;
+BEGIN
+    OPEN c_cart_totals;
+    LOOP
+        FETCH c_cart_totals INTO v_login, v_total_sum;
+        EXIT WHEN c_cart_totals%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('User ' || v_login || ' has a total cart price of ' || v_total_sum);
+    END LOOP;
+    CLOSE c_cart_totals;
+END;
+
+
+
+CREATE OR REPLACE TRIGGER PRODUCT_NAME_LENGTH_CHECK
+BEFORE INSERT OR UPDATE ON MENU
+FOR EACH ROW
+DECLARE
+ MIN_PRODUCT_NAME_LENGTH EXCEPTION;
+ PRAGMA EXCEPTION_INIT(MIN_PRODUCT_NAME_LENGTH, -20009);
+BEGIN
+ IF LENGTH(:NEW.name) < 5 THEN
+  RAISE MIN_PRODUCT_NAME_LENGTH;
+   END IF;
+   EXCEPTION
+   WHEN MIN_PRODUCT_NAME_LENGTH THEN
+    DBMS_OUTPUT.PUT_LINE('Error: Product name must be at least 5 characters long.');
+END;
+
+
+
+CREATE OR REPLACE TRIGGER show_row_count_menu
+BEFORE INSERT ON "MENU"
+FOR EACH ROW
+DECLARE
+  row_count NUMBER;
+BEGIN
+  SELECT COUNT(*) INTO row_count FROM "MENU";
+  DBMS_OUTPUT.PUT_LINE('Current number of rows in the table: ' || row_count);
+END;
+
+
+
+CREATE OR REPLACE TRIGGER update_storage_quantity
+AFTER INSERT ON "SHIPMENTS"
+FOR EACH ROW
+BEGIN
+  UPDATE "STORAGE" s
+  SET s."QUANTITY" = s."QUANTITY" + :new.QUANTITY
+  WHERE s."BRANCH ID" = :new."BRANCH ID" AND s."FEEDSTOCK ID" = :new."FEEDSTOCK ID";
+END;
+
+	
+
+DECLARE
+    m_name menu.name%type;
+    m_cost menu.cost%type;
+CURSOR m_menu is
+    SELECT name, cost FROM menu;
+
+BEGIN
+    OPEN m_menu;
+    LOOP
+    FETCH m_menu into m_name, m_cost;
+        EXIT WHEN m_menu%notfound;
+        dbms_output.put_line(m_name||' '||m_cost);
+    END LOOP;
+    CLOSE m_menu;
+END;
+
+
+
+
+
+DECLARE
+    staff_rec staff%rowtype;
+    code "STAFF"."STAFF ID"%type := :code;
+BEGIN
+    SELECT * into staff_rec
+    FROM staff
+    WHERE "STAFF ID" = code;
+    dbms_output.put_line('Staff ID: '||staff_rec."STAFF ID");
+    dbms_output.put_line('Name: '||staff_rec."FIRST NAME");
+    dbms_output.put_line('Surname: '||staff_rec."LAST NAME");
+    dbms_output.put_line('Phone number: '||staff_rec."PHONE NUMBER");
+    dbms_output.put_line('Email: '||staff_rec."EMAIL");
+    dbms_output.put_line('Date of birth: '||staff_rec."DATE OF BIRTH");
+    dbms_output.put_line('Date of joining: '||staff_rec."DATE OF JOINING");
+    dbms_output.put_line('Salary: '||staff_rec."SALARY");
+END;
+
+
+
+
+DECLARE
+    b_login "BANK CARD"."LOGIN"%type:= :b_login;
+    counter integer := 0;
+    CURSOR bankcard_cur IS
+        SELECT bank, type, "CARD NUMBER", cvv
+        FROM "BANK CARD"
+        WHERE login = b_login;
+    bankcard_rec bankcard_cur%rowtype;
+BEGIN
+    OPEN bankcard_cur;
+    LOOP
+        FETCH bankcard_cur INTO bankcard_rec;
+        EXIT WHEN bankcard_cur%notfound;
+        counter := counter + 1;
+        dbms_output.put_line(counter||' '||bankcard_rec.bank||''||bankcard_rec.type||''||bankcard_rec."CARD NUMBER"||''||bankcard_rec.cvv);
+    END LOOP;
+END;
+
+
+
+
+
+DECLARE
+    b_address branches.address%type;
+    b_phone branches."PHONE NUMBER"%type;
+    counter integer := 0;
+CURSOR b_branches is
+    SELECT address, "PHONE NUMBER" FROM branches;
+
+BEGIN
+    OPEN b_branches;
+    LOOP
+    FETCH b_branches into b_address, b_phone;
+        EXIT WHEN b_branches%notfound;
+        counter := counter + 1;
+        dbms_output.put_line(counter||' '||b_address||' '||b_phone);
+    END LOOP;
+    CLOSE b_branches;
+END;
+
+
+
+
+DECLARE
+    f_id feedstock."FEEDSTOCK ID"%type;
+    f_name feedstock.name%type;
+    CURSOR f_feedstock IS
+        SELECT "FEEDSTOCK ID", name FROM feedstock;
+    TYPE f_list IS TABLE of feedstock.name%type INDEX BY binary_integer;
+    name_list f_list;
+    counter integer := 0;
+BEGIN  
+    FOR n IN f_feedstock LOOP
+        counter := counter + 1;
+        name_list(counter) := n.name;
+        dbms_output.put_line(counter||': '||name_list(counter));
+    END LOOP;
+END;
+
+
+
+
+DECLARE
+    reservation_rec reservation%rowtype;
+    r_login reservation.login%type := :r_login;
+BEGIN  
+    SELECT * INTO reservation_rec
+    FROM reservation
+    WHERE login = r_login;
+    dbms_output.put_line('Login: '||reservation_rec.login);
+    dbms_output.put_line('Table: '||reservation_rec."TABLE NUM");
+    dbms_output.put_line('Time/Date: '||reservation_rec."RES DATE TIME");
+    dbms_output.put_line('Order ID: '||reservation_rec."ORDER ID");
+END;
+
+
+
+CREATE OR REPLACE PROCEDURE delete_succeed_transactions IS
+  deleted_count NUMBER;
+BEGIN
+  DELETE FROM "TRANSACTIONS"
+  WHERE status = 'SUCCESS';
+  deleted_count := SQL%ROWCOUNT;
+  
+  DBMS_OUTPUT.PUT_LINE('Number of successful transactions deleted: ' || deleted_count);
+END;
