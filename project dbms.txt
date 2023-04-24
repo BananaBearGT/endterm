@@ -248,3 +248,28 @@ BEGIN
   
   DBMS_OUTPUT.PUT_LINE('Number of successful transactions deleted: ' || deleted_count);
 END;
+
+
+
+
+DECLARE
+  CURSOR "C BRANCH STORAGE" IS
+    SELECT b."BRANCH ID", b."EMAIL", s."FEEDSTOCK ID", s."QUANTITY"
+    FROM "BRANCHES" b
+    JOIN "STORAGE" s
+    ON b."BRANCH ID" = s."BRANCH ID";
+    
+  "V BRANCH ID" NUMBER;
+  "V EMAIL" VARCHAR2(50);
+  "V FEEDSTOCK ID" NUMBER;
+  "V QUANTITY" NUMBER;
+BEGIN
+  OPEN "C BRANCH STORAGE";
+  LOOP
+    FETCH "C BRANCH STORAGE" INTO "V BRANCH ID", "V EMAIL", "V FEEDSTOCK ID", "V QUANTITY";
+    EXIT WHEN "C BRANCH STORAGE"%NOTFOUND;
+    
+    DBMS_OUTPUT.PUT_LINE("V EMAIL" || ' (Branch ' || "V BRANCH ID" || ') has ' || "V QUANTITY" || ' units of feedstock ' || "V FEEDSTOCK ID");
+  END LOOP;
+  CLOSE "C BRANCH STORAGE";
+END;
